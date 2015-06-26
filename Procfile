@@ -1,1 +1,1 @@
-web: node modules/ini.js
+web: node src/index.js
