@@ -106,10 +106,12 @@ GameServer.prototype.start = function() {
     // Gamemode configurations
     this.gameMode.onServerInit(this);
 	
-	console.log("Server port : " + this.config.serverPort);
+	var port = (process.env.PORT) ? process.env.PORT : this.config.serverPort;
+	
+	console.log("[Game] Selected port : " + port);
 
     // Start the server
-    this.socketServer = new WebSocket.Server({ port: this.config.serverPort }, function() {
+    this.socketServer = new WebSocket.Server({ port: port }, function() {
         // Spawn starting food
         this.startingFood();
 
@@ -117,7 +119,7 @@ GameServer.prototype.start = function() {
         setInterval(this.mainLoop.bind(this), 1);
 
         // Done
-        console.log("[Game] Listening on port %d", this.config.serverPort);
+        console.log("[Game] Listening on port %d", port);
         console.log("[Game] Current game mode is "+this.gameMode.name);
 
         // Player bots (Experimental)
