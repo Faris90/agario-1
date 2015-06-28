@@ -75,25 +75,12 @@ PlayerTracker.prototype.getTeam = function() {
 
 PlayerTracker.prototype.update = function() {
 // Actions buffer (So that people cant spam packets)
-    if (this.socket.packetHandler.pressSpace) { // Split cell
-        this.gameServer.gameMode.pressSpace(this.gameServer,this);
-        this.socket.packetHandler.pressSpace = false;
-    }
 
-    if (this.socket.packetHandler.pressW) { // Eject mass
-        this.gameServer.gameMode.pressW(this.gameServer,this);
-        this.socket.packetHandler.pressW = false;
-    }
-	
-	if (this.socket.packetHandler.pressX) { // Custom Action
-        this.gameServer.gameMode.pressX(this.gameServer,this);
-        this.socket.packetHandler.pressX = false;
-    }
-
-    if (this.socket.packetHandler.pressQ) { // Q Press
-        //this.socket.sendPacket(new Packet.DrawLine(this.mouse.x,this.mouse.y));
-        this.gameServer.gameMode.pressQ(this.gameServer,this);
-        this.socket.packetHandler.pressQ = false;
+    for (var id in this.socket.packetHandler.keys) {
+        if (this.socket.packetHandler["press" + this.socket.packetHandler.keys[id]]) {
+            this.gameServer.gameMode["press" + this.socket.packetHandler.keys[id]](this.gameServer,this);
+            this.socket.packetHandler["press" + this.socket.packetHandler.keys[id]] = false;
+        }
     }
     
     var updateNodes = []; // Nodes that need to be updated via packet

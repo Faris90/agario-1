@@ -141,21 +141,23 @@ Tournament.prototype.updateLB = function(gameServer) {
 
     switch (this.gamePhase) {
         case 0:
-            lb[0] = "Waiting for";
-            lb[1] = "players: ";
-            lb[2] = this.contenders.length+"/"+this.maxContenders;
+            lb[0] = "Players";
+            lb[1] = this.contenders.length+"/"+this.maxContenders;
             if (this.autoFill) {
                 if (this.timer <= 0) {
                     this.fillBots(gameServer);
+                    lb[2] = "Game starting in"
+                    lb[3] = (this.prepTime) + " seconds";
                 } else if (this.contenders.length >= this.autoFillPlayers) {
                     this.timer--;
+                    lb[2] = "Game starting in"
+                    lb[3] = (this.timer + this.prepTime + 1) + " seconds";
                 }
             }
             break;
         case 1:
-            lb[0] = "Game starting in";
+            lb[0] = "Ready ?";
             lb[1] = this.timer.toString();
-            lb[2] = "Good luck!";
             if (this.timer <= 0) {
                 // Reset the game
                 this.startGame(gameServer);
@@ -170,7 +172,6 @@ Tournament.prototype.updateLB = function(gameServer) {
         case 3:
             lb[0] = "Congratulations";
             lb[1] = this.winner.getName();
-            lb[2] = "for winning!";
             if (this.timer <= 0) {
                 // Reset the game
                 this.onServerInit(gameServer);
@@ -178,6 +179,7 @@ Tournament.prototype.updateLB = function(gameServer) {
                 gameServer.startingFood();
             } else {
                 this.timer--;
+                lb[3] = (this.timer).toString();
             }
             break;
         default:

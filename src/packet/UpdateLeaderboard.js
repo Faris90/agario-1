@@ -65,6 +65,7 @@ UpdateLeaderboard.prototype.build = function() {
 
                 var item = lb[i];
                 bufferSize += 4; // Element ID
+                bufferSize += 4*2; // Place on LB
                 bufferSize += item.getName() ? item.getName().length * 2 : 0; // Name
                 bufferSize += 2; // Name terminator
 
@@ -95,7 +96,7 @@ UpdateLeaderboard.prototype.build = function() {
                 offset += 4;
 
                 // Set name
-                var name = item.getName();
+                var name = "" + (i + 1) + ". " + item.getName();
                 if (name) {
                     for (var j = 0; j < name.length; j++) {
                         view.setUint16(offset, name.charCodeAt(j), true);

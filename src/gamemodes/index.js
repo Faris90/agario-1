@@ -5,6 +5,7 @@ module.exports = {
     Experimental: require('./Experimental'),
     Tournament: require('./Tournament'),
     HungerGames: require('./HungerGames'),
+    HungerGamesCustom: require('./HungerGamesCustom'),
 	Rainbow: require('./Rainbow'),
 };
 
@@ -22,6 +23,9 @@ var get = function(id) {
             break;
         case 11: // Hunger Games
             mode = new module.exports.HungerGames();
+            break;
+        case 12: // Hunger Games Custom
+            mode = new module.exports.HungerGamesCustom();
             break;
 		case 20: // Rainbow
             mode = new module.exports.Rainbow();

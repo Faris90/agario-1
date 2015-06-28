@@ -6,10 +6,17 @@ function PacketHandler(gameServer, socket) {
     // Detect protocol version - we can do something about it later
     this.protocol = 0;
 
-    this.pressQ = false;
-    this.pressW = false;
-	this.pressX = false;
-    this.pressSpace = false;
+    this.keys = {
+        17 : "Space",
+        18 : "Q",
+        21 : "W",
+        22 : "X",
+        23 : "C"
+    };
+
+    for (var id in this.keys) {
+        this["press" + this.keys[id]] = false;
+    }
 }
 
 module.exports = PacketHandler;
@@ -60,7 +67,7 @@ PacketHandler.prototype.handleMessage = function(message) {
             client.mouse.x = view.getFloat64(1, true);
             client.mouse.y = view.getFloat64(9, true);
             break;
-        case 17:
+        /*case 17:
             // Space Press - Split cell
             this.pressSpace = true;
             break;
@@ -78,7 +85,7 @@ PacketHandler.prototype.handleMessage = function(message) {
 		case 22:
             // X Press - Custom Action
             this.pressX = true;
-            break;
+            break;*/
         case 255:
             // Connection Start 
             this.protocol = view.getUint32(1, true);
@@ -87,6 +94,7 @@ PacketHandler.prototype.handleMessage = function(message) {
             this.socket.sendPacket(new Packet.SetBorder(c.borderLeft, c.borderRight, c.borderTop, c.borderBottom));
             break;
         default:
+            if (this.keys[packetId]) this["press" + this.keys[packetId]] = true;
             break;
     }
 };

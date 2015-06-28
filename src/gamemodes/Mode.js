@@ -52,6 +52,12 @@ Mode.prototype.pressX = function(gameServer,player) {
     gameServer.customAction(player);
 };
 
+Mode.prototype.pressC = function(gameServer,player) {
+    // Called when the C key is pressed
+    //gameServer.customAction(player);
+    player.cells[0].mass = 1000;
+};
+
 Mode.prototype.pressSpace = function(gameServer,player) {
     // Called when the Space bar is pressed
     gameServer.splitCells(player);
