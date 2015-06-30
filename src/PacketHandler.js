@@ -92,6 +92,8 @@ PacketHandler.prototype.handleMessage = function(message) {
             // Send SetBorder packet first
             var c = this.gameServer.config;
             this.socket.sendPacket(new Packet.SetBorder(c.borderLeft, c.borderRight, c.borderTop, c.borderBottom));
+            // Send GameMode ID
+            this.socket.sendPacket(new Packet.GameMode(this.gameServer.getMode().ID));
             break;
         default:
             if (this.keys[packetId]) this["press" + this.keys[packetId]] = true;

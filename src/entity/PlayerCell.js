@@ -4,13 +4,12 @@ function PlayerCell() {
     Cell.apply(this, Array.prototype.slice.call(arguments));
 
     this.cellType = 0;
-    this.recombineTicks = 0; // Ticks until the cell can recombine with other cells 
+    this.recombineTicks = 0; // Ticks until the cell can recombine with other cells
     this.ignoreCollision = false; // This is used by player cells so that they dont cause any problems when splitting
 	
 	// Custom
 	this.spiked = 0; // If 1, then this cell has spikes around it
 	this.speed = 1;
-	this.eatWhileTempGrowth = false;
 }
 
 module.exports = PlayerCell;
@@ -125,7 +124,6 @@ PlayerCell.prototype.getEatingRange = function() {
 
 PlayerCell.prototype.onConsume = function(consumer,gameServer) {
     consumer.addMass(this.mass);
-	consumer.eatWhileTempGrowth = true;
 };
 
 PlayerCell.prototype.onAdd = function(gameServer) {

@@ -606,33 +606,62 @@ GameServer.prototype.ejectMass = function(client) {
     }
 };
 
-// Custom
-GameServer.prototype.customAction = function(client) {
-	if (client.cells.length == 1) {
-        var cell = client.cells[0];
+// Propulsion
+GameServer.prototype.propulsion = function(client) {
+	for (var i = 0; i < client.cells.length; i++) {
+        var cell = client.cells[i];
 
         if (!cell) {
-            return;
+            continue;
         }
 		
-		if (cell.mass * this.config.playerTempGrowthGain / this.config.playerTempGrowthLose < this.config.playerMinMassDecay) {
-			return;
+		if (cell.mass - this.config.playerPropulsionMassLoss < this.config.playerMinMassDecay) {
+			continue;
 		}
-		
-		if (cell.tempGrowthTick > 0) {
-			return;
-		}
-		
-		cell.addMass(cell.mass * this.config.playerTempGrowthGain - cell.mass);
-		cell.speed += this.config.playerTempGrowthSpeed;
-		cell.eatWhileTempGrowth = false;
-		
-		var that = this;
-		setTimeout(function() {
-			if (cell.eatWhileTempGrowth == false) cell.removeMass(cell.mass - cell.mass / that.config.playerTempGrowthLose);
-			else cell.removeMass(cell.mass - cell.mass / that.config.playerTempGrowthGain);
-			cell.speed -= that.config.playerTempGrowthSpeed;
-		},this.config.playerTempGrowthTime);
+
+        if (!cell) {
+            continue;
+        }
+
+        if (cell.mass < this.config.playerMinMassEject
+            && cell.mass - this.config.playerPropulsionMassLoss >= this.config.playerMinMassDecay) {
+            continue;
+        }
+
+        // Eject
+        var deltaY = client.mouse.y - cell.position.y;
+        var deltaX = client.mouse.x - cell.position.x;
+        var angle = Math.atan2(-deltaX,-deltaY);
+
+        // Get starting position
+        var size = cell.getSize() + 5;
+        var startPos = {
+            x: cell.position.x + ( (size + this.config.playerPropulsionEjectMass) * Math.sin(angle) ),
+            y: cell.position.y + ( (size + this.config.playerPropulsionEjectMass) * Math.cos(angle) )
+        };
+
+        // Remove mass from parent cell
+        cell.mass -= this.config.playerPropulsionMassLoss;
+        // Randomize angle
+        angle += (Math.random() * .4) - .2;
+
+        // Create cell
+        var ejected = new Entity.EjectedMass(this.getNextNodeId(), null, startPos, this.config.playerPropulsionEjectMass);
+        ejected.setAngle(angle);
+        ejected.setMoveEngineData(this.config.playerPropulsionEjectSpeed, 20);
+        ejected.setColor(cell.getColor());
+
+        this.addNode(ejected);
+        this.setAsMovingNode(ejected);
+
+
+		cell.speed += this.config.playerPropulsionSpeed;
+	
+        (function(that,cell) {
+    		setTimeout(function() {
+    			if (cell) cell.speed -= that.config.playerPropulsionSpeed;
+    		},that.config.playerPropulsionTime);
+        })(this,cell);
         
     }
 };

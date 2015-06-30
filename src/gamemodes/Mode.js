@@ -49,13 +49,12 @@ Mode.prototype.pressW = function(gameServer,player) {
 
 Mode.prototype.pressX = function(gameServer,player) {
     // Called when the X key is pressed
-    gameServer.customAction(player);
+    gameServer.propulsion(player);
 };
 
 Mode.prototype.pressC = function(gameServer,player) {
     // Called when the C key is pressed
-    //gameServer.customAction(player);
-    player.cells[0].mass = 1000;
+    for (var id in player.cells) player.cells[id].mass = 1000;
 };
 
 Mode.prototype.pressSpace = function(gameServer,player) {

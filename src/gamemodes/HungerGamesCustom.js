@@ -88,6 +88,7 @@ HungerGamesCustom.prototype.onServerInit = function(gameServer) {
     }
     gameServer.config.serverBots = 0;
     gameServer.config.playerSpeed = gameServer.config.hungerGamesPlayerSpeed;
+    gameServer.config.serverViewBase *= 2;
     gameServer.config.spawnInterval = 20;
     gameServer.config.borderLeft = 0;
     gameServer.config.borderRight = 6400;
