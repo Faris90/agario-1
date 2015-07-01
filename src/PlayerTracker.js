@@ -36,6 +36,7 @@ function PlayerTracker(gameServer, socket) {
         this.pID = gameServer.getNewPlayerID();
         gameServer.gameMode.onPlayerInit(this);
     }
+    this.epic = {};
 }
 
 module.exports = PlayerTracker;
@@ -144,6 +145,13 @@ PlayerTracker.prototype.update = function() {
 
     // Send packet
     this.socket.sendPacket(new Packet.UpdateNodes(this.nodeDestroyQueue.slice(0), updateNodes, nonVisibleNodes));
+
+    var sendEpic = false;
+    for (var id in this.epic) {
+        if (this.epic[id]) sendEpic = true;
+    }
+    //globalLogs.push(this.pID + " " + this.getName() + " : " + sendEpic);
+    this.socket.sendPacket(new Packet.Epicness(sendEpic));
 
     this.nodeDestroyQueue = []; // Reset destroy queue
     this.nodeAdditionQueue = []; // Reset addition queue

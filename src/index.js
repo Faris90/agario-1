@@ -20,6 +20,11 @@ process.argv.forEach(function(val) {
     }
 });
 
+// Lib
+Number.prototype.mod = function(n) {
+    return ((this%n)+n)%n;
+};
+
 // Run Ogar
 var gameServer = new GameServer();
 gameServer.start();

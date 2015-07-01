@@ -57,7 +57,7 @@ PlayerCell.prototype.calcMove = function(x2, y2, gameServer) {
 
     // Distance between mouse pointer and cell
     var dist = this.getDist(this.position.x,this.position.y,x2,y2);
-    var speed = Math.min(this.getSpeed()*this.speed,dist);
+    var speed = Math.min(this.getSpeed() * this.speed,dist);
 
     var x1 = this.position.x + ( speed * Math.sin(angle) );
     var y1 = this.position.y + ( speed * Math.cos(angle) );
@@ -168,4 +168,3 @@ PlayerCell.prototype.getDist = function(x1, y1, x2, y2) {
 
     return Math.sqrt(xs + ys);
 }
-

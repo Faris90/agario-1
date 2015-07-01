@@ -7,6 +7,7 @@ module.exports = {
     HungerGames: require('./HungerGames'),
     HungerGamesCustom: require('./HungerGamesCustom'),
 	Rainbow: require('./Rainbow'),
+    FFACustom: require('./FFACustom'),
 };
 
 var get = function(id) {
@@ -29,6 +30,9 @@ var get = function(id) {
             break;
 		case 20: // Rainbow
             mode = new module.exports.Rainbow();
+            break;
+        case 21: // FFACustom
+            mode = new module.exports.FFACustom();
             break;
         default: // FFA is default
             mode = new module.exports.FFA();

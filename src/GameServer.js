@@ -11,6 +11,10 @@ var Entity = require('./entity');
 var Gamemode = require('./gamemodes');
 var BotLoader = require('./ai/BotLoader.js');
 
+
+globalLogs = [];
+enableGlobalLogs = true;
+
 // GameServer implementation
 function GameServer() {
     // Startup 
@@ -319,6 +323,13 @@ GameServer.prototype.mainLoop = function() {
     var local = new Date();
     this.tick += (local - this.time);
     this.time = local;
+
+    if (enableGlobalLogs) {
+        for (var id in globalLogs) {
+            console.log(globalLogs[id]);
+        }
+    }
+    globalLogs = [];
 
     if (this.tick >= 50) {
         // Loop main functions

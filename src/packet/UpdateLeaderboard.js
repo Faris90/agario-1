@@ -57,6 +57,9 @@ UpdateLeaderboard.prototype.build = function() {
             return buf;
             break;
         case 49: // FFA-type Packet (List)
+
+            var unnamedCell = "Sans_titre.cell";
+
             // Get size of packet
             for (var i = 0; i < lb.length; i++) {
                 if (typeof lb[i] == "undefined") {
@@ -64,9 +67,10 @@ UpdateLeaderboard.prototype.build = function() {
                 }
 
                 var item = lb[i];
+                var itemName = ((item.getName() != "") ? item.getName() : unnamedCell);
                 bufferSize += 4; // Element ID
                 bufferSize += 4*2; // Place on LB
-                bufferSize += item.getName() ? item.getName().length * 2 : 0; // Name
+                bufferSize += itemName ? itemName.length * 2 : 0; // Name
                 bufferSize += 2; // Name terminator
 
                 validElements++;
@@ -96,7 +100,7 @@ UpdateLeaderboard.prototype.build = function() {
                 offset += 4;
 
                 // Set name
-                var name = "" + (i + 1) + ". " + item.getName();
+                var name = "" + (i + 1) + ". " + ((item.getName() != "") ? item.getName() : unnamedCell);;
                 if (name) {
                     for (var j = 0; j < name.length; j++) {
                         view.setUint16(offset, name.charCodeAt(j), true);

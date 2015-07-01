@@ -139,7 +139,8 @@ Commands.list = {
         }
     },
     debug: function(gameServer,split) {
-        parseName(split,1);
+        //parseName(split,1);
+        enableGlobalLogs = !enableGlobalLogs;
     },
     food: function(gameServer,split) {
         var pos = {x: parseInt(split[1]), y: parseInt(split[2])};

@@ -20,6 +20,10 @@ module.exports = Cell;
 
 // Fields not defined by the constructor are considered private and need a getter/setter to access from a different class
 
+Cell.prototype.getId = function() {
+    return this.nodeId;
+}
+
 Cell.prototype.getName = function() {
 if (this.owner) {
         return this.owner.name;
@@ -69,6 +73,14 @@ Cell.prototype.setAngle = function(radians) {
 
 Cell.prototype.getAngle = function() {
     return this.angle;
+};
+
+Cell.prototype.setPosition = function(position) {
+    if (position instanceof array) this.position = position;
+};
+
+Cell.prototype.getPosition = function() {
+    return this.position;
 };
 
 Cell.prototype.setMoveEngineData = function(speed, ticks, decay) {
