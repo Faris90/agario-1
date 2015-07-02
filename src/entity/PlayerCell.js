@@ -168,3 +168,16 @@ PlayerCell.prototype.getDist = function(x1, y1, x2, y2) {
 
     return Math.sqrt(xs + ys);
 }
+
+PlayerCell.prototype.getAngleDist = function(dx,dy) {
+    var dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist != 0) {
+        var angle = Math.acos(dx / dist);
+        if (dy < 0) angle = -angle;
+        return {
+            "angle" : angle,
+            "dist" : dist
+        };
+    }
+    else return NaN;
+}
