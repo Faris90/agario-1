@@ -54,7 +54,7 @@ Mode.prototype.pressX = function(gameServer,player) {
 
 Mode.prototype.pressC = function(gameServer,player) {
     // Called when the C key is pressed
-    for (var id in player.cells) player.cells[id].mass = 1000;
+    //for (var id in player.cells) player.cells[id].mass = 1000;
 };
 
 Mode.prototype.pressSpace = function(gameServer,player) {
