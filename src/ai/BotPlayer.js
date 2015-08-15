@@ -226,6 +226,61 @@ BotPlayer.prototype.decide = function(cell) {
             var deltaX = avoid.position.x - cell.position.x;
             var angle = Math.atan2(deltaX,deltaY);
 
+            var angleEscapeBorders = null;
+            var triggerDistance = 200;
+
+            if (cell.position.x < this.gameServer.config.borderLeft + triggerDistance && angle <= 3 * Math.PI / 4 && angle >= Math.PI / 4) {
+                angleEscapeBorders = Math.PI / 2;
+            }
+            else if (cell.position.y < this.gameServer.config.borderTop + triggerDistance && angle <= - Math.PI / 4 && angle >= Math.PI / 4) {
+                angleEscapeBorders = 0;
+            }
+            else if (cell.position.x > this.gameServer.config.borderRight - triggerDistance && angle <= Math.PI / 4 && angle >= - 3 * Math.PI / 4) {
+                angleEscapeBorders = - Math.PI / 2;
+            }
+            else if (cell.position.y > this.gameServer.config.borderBottom - triggerDistance && (angle <= - 3 * Math.PI / 4 || angle >= 3 * Math.PI / 4)) {
+                angleEscapeBorders = Math.PI;
+            }
+            if (angleEscapeBorders != null && avoid.getName() == "Shyked") console.log(angleEscapeBorders);
+            console.log(cell.position.y);
+            console.log(this.gameServer.config.borderBottom - triggerDistance);
+            console.log(angle);
+
+            if (angleEscapeBorders != null) {
+                var distFromBorders = {
+                    "-157"  : this.gameServer.config.borderRight - cell.position.x,
+                    "314"   : this.gameServer.config.borderBottom - cell.position.y,
+                    "157"   : cell.position.x - this.gameServer.config.borderLeft,
+                    "0"     : cell.position.y - this.gameServer.config.bordertop
+                };
+
+                var right = angleEscapeBorders - Math.PI / 2;
+                if (right == -Math.PI) right = Math.PI;
+                var left = angleEscapeBorders + Math.PI / 2;
+                if (left == 3 * Math.PI / 2) left = -Math.PI / 2;
+
+                if (distFromBorders[parseInt(left*100)] < triggerDistance * 3) {
+                    angleEscapeBorders = right;
+                    console.log("On the right !!");
+                }
+                else if (distFromBorders[parseInt(right*100)] < triggerDistance * 3) {
+                    angleEscapeBorders = left;
+                    console.log("On the left !!");
+                }
+                else {
+                    if (Math.abs(angle - left) < Math.abs(angle - right)) {
+                        angleEscapeBorders = left;
+                        console.log("On the left");
+                    }
+                    else {
+                        angleEscapeBorders = right;
+                        console.log("On the right");
+                    }
+                }
+
+                angle = angleEscapeBorders;
+            }
+
             // Now reverse the angle
             if (angle > Math.PI) {
                 angle -= Math.PI;

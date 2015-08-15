@@ -36,7 +36,7 @@ function PlayerTracker(gameServer, socket) {
         this.pID = gameServer.getNewPlayerID();
         gameServer.gameMode.onPlayerInit(this);
     }
-    this.epic = {};
+    this.epicness = {};
 }
 
 module.exports = PlayerTracker;
@@ -77,12 +77,34 @@ PlayerTracker.prototype.getTeam = function() {
 PlayerTracker.prototype.update = function() {
 // Actions buffer (So that people cant spam packets)
 
+    // Keys
     for (var id in this.socket.packetHandler.keys) {
         if (this.socket.packetHandler["press" + this.socket.packetHandler.keys[id]]) {
             this.gameServer.gameMode["press" + this.socket.packetHandler.keys[id]](this.gameServer,this);
             this.socket.packetHandler["press" + this.socket.packetHandler.keys[id]] = false;
         }
     }
+
+    // Chatbox Messages
+    for (var id in this.socket.packetHandler.messagesBuffer) {
+        var msg = this.socket.packetHandler.messagesBuffer[id];
+        if (msg.substr(0, 1) == "/" && msg.length > 1) {
+            var command = msg.substr(1).split(" ")[0];
+            var params = msg.substr(1).split(" ").splice(1);
+            this.gameServer.gameMode.playerCommand(command, params, this);
+        }
+        else {
+            for (var clientId in this.gameServer.clients) {
+                this.gameServer.clients[clientId].playerTracker.socket.sendPacket(new Packet.ChatboxMessage(
+                    msg,
+                    this.getName(),
+                    (this.color)?this.color:{r:200,g:200,b:200},
+                    0
+                ));
+            }
+        }
+    }
+    this.socket.packetHandler.messagesBuffer = [];
     
     var updateNodes = []; // Nodes that need to be updated via packet
     
@@ -146,12 +168,15 @@ PlayerTracker.prototype.update = function() {
     // Send packet
     this.socket.sendPacket(new Packet.UpdateNodes(this.nodeDestroyQueue.slice(0), updateNodes, nonVisibleNodes));
 
-    var sendEpic = false;
-    for (var id in this.epic) {
-        if (this.epic[id]) sendEpic = true;
+    var ratioEpicness = 0;
+    var length = 0;
+    for (var id in this.epicness) {
+        ratioEpicness += this.epicness[id];
+        length++;
     }
+    if (length * this.gameServer.config.playerEpicnessCeil != 0) ratioEpicness /= length * this.gameServer.config.playerEpicnessCeil;
     //globalLogs.push(this.pID + " " + this.getName() + " : " + sendEpic);
-    this.socket.sendPacket(new Packet.Epicness(sendEpic));
+    this.socket.sendPacket(new Packet.Epicness(ratioEpicness));
 
     this.nodeDestroyQueue = []; // Reset destroy queue
     this.nodeAdditionQueue = []; // Reset addition queue
@@ -266,3 +291,11 @@ PlayerTracker.prototype.getSpectateNodes = function() {
     }
 };
 
+PlayerTracker.prototype.sendMessage = function(msg) {
+    this.socket.sendPacket(new Packet.ChatboxMessage(
+        msg,
+        "System",
+        {r:220,g:60,b:60},
+        1
+    ));
+};

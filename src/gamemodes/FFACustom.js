@@ -11,6 +11,7 @@ function FFACustom() {
     this.gameServer = null;
 
     this.epicness = {};
+    this.epicnessAimed = {};
 }
 
 module.exports = FFACustom;
@@ -25,8 +26,8 @@ FFACustom.prototype.epicnessInc = function(cell, epicness) {
     this.epicness[id] += epicness;
     if (this.epicness[id] >= this.gameServer.config.playerEpicnessCeil) {
         this.epicness[id] = Math.abs(this.gameServer.config.playerEpicnessCeil);
-        if (cell.owner) cell.owner.epic[cell.getId()] = true;
     }
+    if (cell.owner) cell.owner.epicness[cell.getId()] = this.epicness[id];
 }
 
 FFACustom.prototype.epicnessDec = function(cell, epicness) {
@@ -35,14 +36,7 @@ FFACustom.prototype.epicnessDec = function(cell, epicness) {
     if (!this.epicness[id]) this.epicness[id] = 0;
     epicness = Math.max(epicness, 0);
     this.epicness[id] = Math.max(this.epicness[id] - epicness, 0);
-    if (cell.getName() == "Shyked") {
-        var str = "";
-        for (var i = 0 ; i < this.epicness[id] ; i++) str += "=";
-        globalLogs.push(str + "> ");
-    }
-    if (this.epicness[id] == 0) {
-        if (cell.owner) cell.owner.epic[cell.getId()] = false;
-    }
+    if (cell.owner) cell.owner.epicness[cell.getId()] = this.epicness[id];
 }
 
 // Override
@@ -58,6 +52,10 @@ FFACustom.prototype.onCellMove = function(x1, y1, cell) {
         this.epicnessDec(cell, this.gameServer.config.playerEpicnessDec);
 
         cells = cell.owner.visibleNodes;
+
+        this.epicnessInc(cell,this.epicnessAimed[cell.getId()]);
+        this.epicnessAimed[cell.getId()] = 0;
+        var epicnessFocus = 0;
 
         for (var id in cells) {
 
@@ -91,6 +89,9 @@ FFACustom.prototype.onCellMove = function(x1, y1, cell) {
                 assault = (delta < Math.PI / 2 || delta > 3 * Math.PI / 2) ? true : false;
             }
 
+            // Mass difference
+            var notTooBig = (cell.mass < otherCell.mass * 3);
+
 
             // Direction variables (is the cell heading directly to the otherCell)
             // y = ex + f
@@ -115,11 +116,14 @@ FFACustom.prototype.onCellMove = function(x1, y1, cell) {
             if (aim) totalEpicness += this.gameServer.config.playerEpicnessGainDir;
             if (assault) totalEpicness += this.gameServer.config.playerEpicnessGainAssault;
             if (isNear && aim && assault) totalEpicness += this.gameServer.config.playerEpicnessGainAll;
+            if (notTooBig) totalEpicness *= this.gameServer.config.playerEpicnessBonusMass;
 
             //globalLogs.push(((isNear)?"o":" ") + " " + ((aim)?"o":" ") + " " + ((assault)?"o":" "));
 
-            this.epicnessInc(cell,totalEpicness);
-            this.epicnessInc(otherCell,totalEpicness);
+            if (totalEpicness > epicnessFocus) epicnessFocus += totalEpicness;
+            else epicnessFocus += totalEpicness / this.gameServer.config.playerEpicnessMalusMulti;
+            if (totalEpicness > this.epicnessAimed[otherCell.getId()]) this.epicnessAimed[otherCell.getId()] = totalEpicness;
+            else this.epicnessAimed[otherCell.getId()] += totalEpicness / this.gameServer.config.playerEpicnessMalusMulti;
 
 
             // Circle : (x - a)² + (y - b)² = R²
@@ -138,16 +142,18 @@ FFACustom.prototype.onCellMove = function(x1, y1, cell) {
             // If delta >= 0, intersection
             // (-2a + 2e * (f - b))² - 4 * (1 + e²) * (a² + (f - b)² - R²) >= 0
         }
+        this.epicnessInc(cell,epicnessFocus);
     }
 };
 
 FFACustom.prototype.onCellRemove = function(cell) {
-    if (cell.owner) cell.owner.epic[cell.getId()] = false;
+    if (cell.owner) delete cell.owner.epicness[cell.getId()];
+    delete this.epicness[cell.getId()];
 };
 
 FFACustom.prototype.onPlayerSpawn = function(gameServer,player) {
     // Called when a player is spawned
     player.color = gameServer.getRandomColor(); // Random color
     gameServer.spawnPlayer(player);
-    player.epic = {};
+    player.epicness = {};
 };

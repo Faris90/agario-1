@@ -6,6 +6,7 @@ module.exports = {
     Tournament: require('./Tournament'),
     HungerGames: require('./HungerGames'),
     HungerGamesCustom: require('./HungerGamesCustom'),
+    HideAndSeek: require('./HideAndSeek'),
 	Rainbow: require('./Rainbow'),
     FFACustom: require('./FFACustom'),
 };
@@ -33,6 +34,9 @@ var get = function(id) {
             break;
         case 21: // FFACustom
             mode = new module.exports.FFACustom();
+            break;
+        case 30: // Hide and Seek
+            mode = new module.exports.HideAndSeek();
             break;
         default: // FFA is default
             mode = new module.exports.FFA();

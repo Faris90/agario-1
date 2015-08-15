@@ -6,17 +6,23 @@ function PacketHandler(gameServer, socket) {
     // Detect protocol version - we can do something about it later
     this.protocol = 0;
 
+    // Keys
     this.keys = {
         17 : "Space",
         18 : "Q",
         21 : "W",
         22 : "X",
-        23 : "C"
+        23 : "C",
+        30 : "Enter"
     };
 
     for (var id in this.keys) {
         this["press" + this.keys[id]] = false;
     }
+
+
+    // Chatbox Messages
+    this.messagesBuffer = [];
 }
 
 module.exports = PacketHandler;
@@ -86,6 +92,12 @@ PacketHandler.prototype.handleMessage = function(message) {
             // X Press - Custom Action
             this.pressX = true;
             break;*/
+        case 100: // Chatbox message
+            var strLength = view.getUint16(1, false);
+            var msg = "";
+            for (var i = 0; i < strLength; ++i) msg += String.fromCharCode(view.getUint32(i*4 + 3, false));
+            this.messagesBuffer.push(msg);
+            break;
         case 255:
             // Connection Start 
             this.protocol = view.getUint32(1, true);

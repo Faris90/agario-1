@@ -78,3 +78,6 @@ Mode.prototype.updateLB = function(gameServer) {
     // Called when the leaderboard update function is called
 };
 
+Mode.prototype.playerCommand = function(command, params, playerTracker) {
+    // Called when a player types a message starting by a slash
+};

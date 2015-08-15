@@ -915,6 +915,27 @@ GameServer.prototype.switchSpectator = function(player) {
     }
 };
 
+GameServer.prototype.sendMessage = function(msg, announcement, name, color) {
+    for (var clientId in this.clients) {
+        if (announcement) {
+            this.clients[clientId].playerTracker.socket.sendPacket(new Packet.ChatboxMessage(
+                msg,
+                "System announcement",
+                {r:220,g:60,b:60},
+                1
+            ));
+        }
+        else {
+            this.clients[clientId].playerTracker.socket.sendPacket(new Packet.ChatboxMessage(
+                msg,
+                name,
+                color,
+                2
+            ));   
+        }
+    }
+};
+
 // Custom prototype functions
 WebSocket.prototype.sendPacket = function(packet) {
     function getbuf(data) {
