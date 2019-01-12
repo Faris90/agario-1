@@ -2,12 +2,15 @@
   "name": "Ogar",
   "version": "1.0.0",
   "description": "Open source Agar.io server",
-  "main": "src/index.js",
+  "main": "index.js",
   "dependencies": {
-    "ws": "^0.7.2"
+    "ws": "^0.7.2",
+    "finalhandler": "^0.3.6",
+    "serve-static": "^1.9.3"
   },
   "devDependencies": {},
   "scripts": {
+    "start": "node src/index.js --game",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
